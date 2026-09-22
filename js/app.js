@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // 현재 애플리케이션 상태
   const state = {
     currentDocId: null,
+    viewMode: "wiki", // "wiki": 단일 문서 상세 보기, "board": 카드보드 칸반/그리드 보기
+    boardFilter: "all", // "all" 또는 특정 카테고리/태그 그룹 ID
     theme: localStorage.getItem("wiki_theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"),
     fontSizeLevel: 0, // -1: 작게, 0: 기본, 1: 크게, 2: 아주 크게
     fontSizes: ["0.9rem", "1rem", "1.1rem", "1.2rem"]
@@ -20,8 +22,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // DOM 요소 캐싱
   const elements = {
+    appLayout: document.getElementById("appLayout"),
     treeContainer: document.getElementById("treeContainer"),
     mainContent: document.getElementById("mainContent"),
+    wikiViewContainer: document.getElementById("wikiViewContainer"),
+    boardViewContainer: document.getElementById("boardViewContainer"),
+    viewModeWikiBtn: document.getElementById("viewModeWikiBtn"),
+    viewModeBoardBtn: document.getElementById("viewModeBoardBtn"),
     tocList: document.getElementById("tocList"),
     searchInput: document.getElementById("searchInput"),
     searchClearBtn: document.getElementById("searchClearBtn"),
@@ -122,10 +129,59 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function handleRoute() {
     const hash = window.location.hash.replace("#", "");
+
+    // 해시가 'board'인 경우 카드보드 모드로 전환
+    if (hash === "board") {
+      switchViewMode("board");
+      return;
+    }
+
     const targetDoc = WIKI_DOCUMENTS.find((d) => d.id === hash) || WIKI_DOCUMENTS[0];
     
     if (targetDoc) {
       state.currentDocId = targetDoc.id;
+      if (state.viewMode === "board") {
+        switchViewMode("wiki");
+      } else {
+        renderDocument(targetDoc);
+        updateTreeActiveState();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  }
+
+  // 뷰 모드 전환 (문서 뷰 vs 카드보드 뷰)
+  function switchViewMode(mode) {
+    state.viewMode = mode;
+    if (mode === "board") {
+      if (elements.viewModeWikiBtn) {
+        elements.viewModeWikiBtn.classList.remove("active");
+        elements.viewModeWikiBtn.setAttribute("aria-checked", "false");
+      }
+      if (elements.viewModeBoardBtn) {
+        elements.viewModeBoardBtn.classList.add("active");
+        elements.viewModeBoardBtn.setAttribute("aria-checked", "true");
+      }
+      if (elements.wikiViewContainer) elements.wikiViewContainer.classList.remove("active");
+      if (elements.boardViewContainer) elements.boardViewContainer.classList.add("active");
+      if (elements.appLayout) elements.appLayout.classList.add("mode-board");
+
+      renderBoardView();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      if (elements.viewModeBoardBtn) {
+        elements.viewModeBoardBtn.classList.remove("active");
+        elements.viewModeBoardBtn.setAttribute("aria-checked", "false");
+      }
+      if (elements.viewModeWikiBtn) {
+        elements.viewModeWikiBtn.classList.add("active");
+        elements.viewModeWikiBtn.setAttribute("aria-checked", "true");
+      }
+      if (elements.boardViewContainer) elements.boardViewContainer.classList.remove("active");
+      if (elements.wikiViewContainer) elements.wikiViewContainer.classList.add("active");
+      if (elements.appLayout) elements.appLayout.classList.remove("mode-board");
+
+      const targetDoc = WIKI_DOCUMENTS.find((d) => d.id === state.currentDocId) || WIKI_DOCUMENTS[0];
       renderDocument(targetDoc);
       updateTreeActiveState();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -150,7 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 4. 위키 본문 렌더링
   function renderDocument(doc) {
-    if (!elements.mainContent) return;
+    if (!elements.wikiViewContainer) return;
 
     // 카테고리 정보 조회
     const category = WIKI_CATEGORIES.find((c) => c.id === doc.categoryId);
@@ -167,14 +223,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // HTML 조립
     let html = `
-      <!-- 브레드크럼 -->
-      <nav class="breadcrumb-nav">
-        <span>홈</span>
-        <span class="sep">/</span>
-        <span>${category ? category.title : ""}</span>
-        <span class="sep">/</span>
-        <span class="current">${doc.title}</span>
-      </nav>
+      <!-- 브레드크럼 및 뷰 모드 퀵 버튼 -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+        <nav class="breadcrumb-nav" style="margin-bottom: 0;">
+          <span>홈</span>
+          <span class="sep">/</span>
+          <span>${category ? category.title : ""}</span>
+          <span class="sep">/</span>
+          <span class="current">${doc.title}</span>
+        </nav>
+        <button class="action-icon-btn" id="quickSwitchToBoardBtn" style="background-color: var(--primary-bg); color: var(--primary); font-weight: 600;">
+          📋 <span>카드보드로 전체 보기</span>
+        </button>
+      </div>
 
       <!-- 문서 헤더 -->
       <header class="doc-header-card ${doc.heroImage ? "has-hero-image" : ""}">
@@ -317,7 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
       </footer>
     `;
 
-    elements.mainContent.innerHTML = html;
+    elements.wikiViewContainer.innerHTML = html;
 
     // 본문 이벤트 바인딩
     bindDocumentEvents();
@@ -328,6 +389,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 5. 본문 내 이벤트 바인딩
   function bindDocumentEvents() {
+    // 카드보드로 전체 보기 퀵 버튼
+    const quickBoardBtn = document.getElementById("quickSwitchToBoardBtn");
+    if (quickBoardBtn) {
+      quickBoardBtn.addEventListener("click", () => switchViewMode("board"));
+    }
+
     // 히어로 이미지 클릭 시 라이트박스 팝업
     document.querySelectorAll(".header-hero-card").forEach((card) => {
       card.addEventListener("click", () => {
@@ -677,7 +744,165 @@ document.addEventListener("DOMContentLoaded", () => {
     elements.themeToggleBtn.addEventListener("click", toggleTheme);
   }
 
-  // 12. 브라우저 라우트 이벤트 리스너 등록
+  // 12. 뷰 모드 전환 버튼 이벤트
+  if (elements.viewModeWikiBtn) {
+    elements.viewModeWikiBtn.addEventListener("click", () => switchViewMode("wiki"));
+  }
+  if (elements.viewModeBoardBtn) {
+    elements.viewModeBoardBtn.addEventListener("click", () => switchViewMode("board"));
+  }
+
+  // 13. 카드보드(Card Board / Kanban Grid) 렌더링
+  const BOARD_FILTERS = [
+    { id: "all", label: "전체 주제 (25)" },
+    { id: "cat-1", label: "1. 기본사회 총론 (5)" },
+    { id: "cat-2", label: "2. 공유부·커머닝 (5)" },
+    { id: "cat-3", label: "3. AI·기후위기 (4)" },
+    { id: "cat-4", label: "4. 지방정부 실현 (6)" },
+    { id: "cat-5", label: "5. 국내외 지역사례 (4)" }
+  ];
+
+  function renderBoardView() {
+    if (!elements.boardViewContainer) return;
+
+    // 현재 선택된 필터에 따라 문서 필터링
+    let filteredDocs = WIKI_DOCUMENTS;
+    if (state.boardFilter !== "all") {
+      filteredDocs = WIKI_DOCUMENTS.filter((d) => d.categoryId === state.boardFilter);
+    }
+
+    // 카드보드 HTML 구성
+    let html = `
+      <div class="board-container">
+        <!-- 보드 인트로 헤더 -->
+        <div class="board-intro-header">
+          <div>
+            <h2 class="board-intro-title">📋 기본사회와 지방정부 25대 핵심 정책 카드보드</h2>
+            <p class="board-intro-desc">전체 5개 부문 25개 주제를 한눈에 조감하고, 관심 있는 카드를 클릭하여 상세 지식을 탐색하세요.</p>
+          </div>
+          <div class="board-stats-badge">
+            <span>📚 총 등록 정책: <strong>${WIKI_DOCUMENTS.length}개</strong></span>
+          </div>
+        </div>
+
+        <!-- 빠른 필터 칩 바 -->
+        <div class="board-filter-bar">
+          <span class="filter-label">🏷️ 부문별 필터:</span>
+          ${BOARD_FILTERS.map(
+            (f) => `
+            <button class="filter-chip ${state.boardFilter === f.id ? "active" : ""}" data-filter-id="${f.id}">
+              ${f.label}
+            </button>
+          `
+          ).join("")}
+        </div>
+
+        <!-- 카테고리별 가로 그리드 섹션 목록 -->
+        <div class="board-sections-wrap">
+    `;
+
+    // 카테고리별 섹션 렌더링
+    const targetCategories =
+      state.boardFilter === "all"
+        ? WIKI_CATEGORIES
+        : WIKI_CATEGORIES.filter((c) => c.id === state.boardFilter);
+
+    targetCategories.forEach((cat) => {
+      const catDocs = filteredDocs.filter((d) => d.categoryId === cat.id);
+
+      html += `
+        <section class="board-category-section">
+          <div class="board-section-header">
+            <div class="board-sec-title-row">
+              <div class="board-sec-left">
+                <span class="board-sec-icon">${cat.icon}</span>
+                <h3 class="board-sec-title">${cat.title}</h3>
+              </div>
+              <span class="board-sec-count">${catDocs.length}개 주제</span>
+            </div>
+            <p class="board-sec-desc">${cat.description}</p>
+          </div>
+
+          <div class="board-cards-grid">
+            ${
+              catDocs.length === 0
+                ? `<div style="padding: 2rem 0; text-align: center; color: var(--text-muted); font-size: 0.875rem; grid-column: 1 / -1;">해당 부문에 표시할 카드가 없습니다.</div>`
+                : catDocs
+                    .map((doc) => {
+                      // 썸네일 이미지 결정
+                      const thumbSrc = doc.heroImage
+                        ? doc.heroImage.src
+                        : doc.images && doc.images.length > 0
+                        ? doc.images[0].src
+                        : "images/background.png";
+
+                      // 앞의 번호 추출 (예: 1.1, 2.3 등)
+                      const numMatch = doc.title.match(/^[0-9.]+/);
+                      const docNum = numMatch ? numMatch[0] : "";
+
+                      return `
+                <article class="policy-card" data-doc-id="${doc.id}">
+                  <div class="policy-card-thumb">
+                    <img src="${thumbSrc}" alt="${doc.title}" loading="lazy">
+                    ${docNum ? `<div class="card-badge-num">${docNum}</div>` : ""}
+                  </div>
+                  <div class="policy-card-body">
+                    <div class="policy-card-tags">
+                      ${(doc.tags || [])
+                        .slice(0, 2)
+                        .map((t) => `<span class="policy-card-tag">#${t}</span>`)
+                        .join("")}
+                    </div>
+                    <h4 class="policy-card-title">${doc.title}</h4>
+                    <p class="policy-card-summary">${doc.summary}</p>
+                    <div class="policy-card-footer">
+                      <span>⏱️ 3분 읽기</span>
+                      <span class="policy-card-action">자세히 보기 →</span>
+                    </div>
+                  </div>
+                </article>
+              `;
+                    })
+                    .join("")
+            }
+          </div>
+        </section>
+      `;
+    });
+
+    html += `
+        </div>
+      </div>
+    `;
+
+    elements.boardViewContainer.innerHTML = html;
+
+    // 카드보드 내 이벤트 바인딩
+    bindBoardEvents();
+  }
+
+  // 14. 카드보드 이벤트 바인딩
+  function bindBoardEvents() {
+    // 필터 칩 클릭 이벤트
+    document.querySelectorAll(".filter-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const filterId = chip.dataset.filterId;
+        state.boardFilter = filterId;
+        renderBoardView();
+      });
+    });
+
+    // 개별 카드 클릭 시 해당 문서의 위키 상세 뷰로 전환
+    document.querySelectorAll(".policy-card").forEach((card) => {
+      card.addEventListener("click", () => {
+        const docId = card.dataset.docId;
+        navigateToDoc(docId);
+        switchViewMode("wiki");
+      });
+    });
+  }
+
+  // 15. 브라우저 라우트 이벤트 리스너 등록
   window.addEventListener("hashchange", handleRoute);
 
   // 초기화 실행
@@ -686,3 +911,4 @@ document.addEventListener("DOMContentLoaded", () => {
   setupSearch();
   handleRoute();
 });
+

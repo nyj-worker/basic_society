@@ -1369,3 +1369,374 @@ button {
     gap: 0.75rem;
   }
 }
+
+/* ===================================================================
+   뷰 모드 스위처 (문서 뷰 vs 카드보드 뷰)
+   =================================================================== */
+.view-mode-switcher {
+  display: flex;
+  background-color: var(--bg-tertiary);
+  padding: 3px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+}
+
+.view-mode-btn {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.view-mode-btn:hover {
+  color: var(--text-primary);
+}
+
+.view-mode-btn.active {
+  background-color: var(--bg-secondary);
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 뷰 패널 전환 */
+.view-pane {
+  display: none;
+}
+
+.view-pane.active {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+/* 카드보드 모드일 때 메인 레이아웃 확장 */
+#appLayout.mode-board .toc-panel {
+  display: none;
+}
+
+#appLayout.mode-board .main-content {
+  max-width: calc(100vw - var(--sidebar-width));
+  padding: 2rem 2.5rem 5rem;
+}
+
+/* ===================================================================
+   카드보드(Card Board) 전용 스타일
+   =================================================================== */
+.board-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.board-intro-header {
+  background: linear-gradient(135deg, var(--primary-bg), var(--accent-bg));
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.board-intro-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.35rem;
+}
+
+.board-intro-desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.board-stats-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 빠른 필터 칩 바 */
+.board-filter-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.filter-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.filter-chip {
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filter-chip:hover {
+  border-color: var(--primary-light);
+  color: var(--text-primary);
+  background-color: var(--bg-tertiary);
+}
+
+.filter-chip.active {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 2px 6px rgba(30, 58, 138, 0.3);
+}
+
+/* ===================================================================
+   카드보드 가로 그리드(Horizontal Grid) 레이아웃
+   =================================================================== */
+.board-sections-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  padding: 1rem 0 3rem;
+}
+
+.board-category-section {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1.75rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.board-section-header {
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border-subtle);
+}
+
+.board-sec-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.board-sec-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.board-sec-icon {
+  font-size: 1.35rem;
+}
+
+.board-sec-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.board-sec-count {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background-color: var(--primary-bg);
+  color: var(--primary);
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-full);
+}
+
+.board-sec-desc {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* 가로 나열 그리드 (1행에 3~5개씩 시원하게 가로 정렬) */
+.board-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+@media (min-width: 1500px) {
+  .board-cards-grid {
+    grid-template-columns: repeat(5, 1fr); /* 대화면에서 5개 카드가 가로 1열로 나란히 배치 */
+  }
+}
+
+@media (max-width: 1499px) and (min-width: 1200px) {
+  .board-cards-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 800px) {
+  .board-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 799px) and (min-width: 550px) {
+  .board-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 549px) {
+  .board-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 개별 정책 카드 (Policy Card) */
+.policy-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+}
+
+.policy-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-light);
+}
+
+/* 카드 썸네일 래퍼 */
+.policy-card-thumb {
+  width: 100%;
+  height: 135px;
+  position: relative;
+  overflow: hidden;
+  background-color: #0f172a;
+}
+
+.policy-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.policy-card:hover .policy-card-thumb img {
+  transform: scale(1.06);
+}
+
+.card-badge-num {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(15, 23, 42, 0.75);
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+  font-weight: 700;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 카드 본문 */
+.policy-card-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.policy-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.4rem;
+}
+
+.policy-card-tag {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--primary);
+  background-color: var(--primary-bg);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+.policy-card-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+  line-height: 1.4;
+}
+
+.policy-card-summary {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 0.85rem;
+  flex: 1;
+}
+
+.policy-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.65rem;
+  border-top: 1px dashed var(--border-subtle);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.policy-card-action {
+  color: var(--primary);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  transition: gap var(--transition-fast);
+}
+
+.policy-card:hover .policy-card-action {
+  gap: 0.4rem;
+}
+

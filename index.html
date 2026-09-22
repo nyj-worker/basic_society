@@ -30,6 +30,16 @@
     </div>
 
     <div class="header-right">
+      <!-- 뷰 모드 스위처 (문서 뷰 vs 카드보드 뷰) -->
+      <div class="view-mode-switcher" id="viewModeSwitcher" role="radiogroup" aria-label="화면 보기 방식">
+        <button class="view-mode-btn active" id="viewModeWikiBtn" data-mode="wiki" aria-checked="true" title="단일 문서 상세 보기">
+          📖 <span>문서 뷰</span>
+        </button>
+        <button class="view-mode-btn" id="viewModeBoardBtn" data-mode="board" aria-checked="false" title="25개 핵심 주제 카드보드 보기">
+          📋 <span>카드보드 뷰</span>
+        </button>
+      </div>
+
       <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="화면 테마 변경">
         🌙 <span>다크모드</span>
       </button>
@@ -37,7 +47,7 @@
   </header>
 
   <!-- 메인 애플리케이션 레이아웃 -->
-  <div class="app-layout">
+  <div class="app-layout" id="appLayout">
 
     <!-- 좌측 사이드바 트리 탐색기 -->
     <aside class="sidebar" id="sidebar">
@@ -72,9 +82,13 @@
     <!-- 실시간 검색 결과 오버레이 팝업 -->
     <div class="search-results-overlay" id="searchResultsOverlay"></div>
 
-    <!-- 중앙 메인 위키 뷰어 영역 -->
+    <!-- 중앙 메인 뷰어 영역 -->
     <main class="main-content" id="mainContent">
-      <!-- js/app.js에서 동적으로 문서 내용이 렌더링됩니다 -->
+      <!-- 1. 위키 문서 상세 뷰 패널 -->
+      <div class="view-pane active" id="wikiViewContainer"></div>
+
+      <!-- 2. 카드보드 칸반/그리드 뷰 패널 -->
+      <div class="view-pane" id="boardViewContainer"></div>
     </main>
 
     <!-- 우측 온페이지 목차 (TOC) 패널 -->
