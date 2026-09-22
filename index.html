@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>기본사회와 지방정부 지식 위키트리 | 정책 포털</title>
+  <meta name="description" content="기본사회의 철학, 헌법적 가치, 공유부와 커머닝, AI와 기후위기 대전환, 지방정부의 5대 역할과 국내외 선도 사례를 알기 쉽게 정리한 인터랙티브 지식 위키트리">
+  
+  <!-- Pretendard 웹폰트 -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  
+  <!-- CSS 스타일시트 -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- 상단 네비게이션 헤더 -->
+  <header class="top-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="메뉴 열기/닫기">
+        ☰
+      </button>
+      <a href="#doc-1-1" class="brand-logo">
+        <div class="brand-icon">🏛️</div>
+        <div class="brand-text">
+          <h1>기본사회와 지방정부</h1>
+          <span>지식 위키트리 & 정책 포털</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-right">
+      <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="화면 테마 변경">
+        🌙 <span>다크모드</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 메인 애플리케이션 레이아웃 -->
+  <div class="app-layout">
+
+    <!-- 좌측 사이드바 트리 탐색기 -->
+    <aside class="sidebar" id="sidebar">
+      <!-- 실시간 통합 검색창 -->
+      <div class="sidebar-search-box">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="searchInput" placeholder="주제, 정책, 지자체 검색 (예: 오스트롬, 남양주)" autocomplete="off">
+          <button class="search-clear-btn" id="searchClearBtn" title="검색어 지우기">✕</button>
+        </div>
+      </div>
+
+      <!-- 트리 컨트롤 바 -->
+      <div class="sidebar-controls">
+        <span>정책 목차 트리</span>
+        <div class="tree-action-btns">
+          <button class="tree-action-btn" id="expandAllBtn">모두 펼치기</button>
+          <span>·</span>
+          <button class="tree-action-btn" id="collapseAllBtn">모두 접기</button>
+        </div>
+      </div>
+
+      <!-- 계층 트리 목록 렌더링 컨테이너 -->
+      <nav class="tree-container" id="treeContainer">
+        <!-- js/app.js에서 동적으로 렌더링됩니다 -->
+      </nav>
+    </aside>
+
+    <!-- 모바일 사이드바 백드롭 -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <!-- 실시간 검색 결과 오버레이 팝업 -->
+    <div class="search-results-overlay" id="searchResultsOverlay"></div>
+
+    <!-- 중앙 메인 위키 뷰어 영역 -->
+    <main class="main-content" id="mainContent">
+      <!-- js/app.js에서 동적으로 문서 내용이 렌더링됩니다 -->
+    </main>
+
+    <!-- 우측 온페이지 목차 (TOC) 패널 -->
+    <aside class="toc-panel" id="tocPanel">
+      <div class="toc-title">이 페이지의 목차</div>
+      <ul class="toc-list" id="tocList">
+        <!-- js/app.js에서 동적으로 소제목 목록을 생성합니다 -->
+      </ul>
+    </aside>
+
+  </div>
+
+  <!-- 이미지 고해상도 라이트박스 모달 -->
+  <div class="lightbox-modal" id="lightboxModal" role="dialog" aria-modal="true">
+    <div class="lightbox-content-box">
+      <button class="lightbox-close-btn" id="lightboxCloseBtn" aria-label="닫기">✕</button>
+      <img src="" alt="" class="lightbox-img" id="lightboxImg">
+      <div class="lightbox-caption-text" id="lightboxCaption"></div>
+    </div>
+  </div>
+
+  <!-- 자바스크립트 모듈 로드 -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
