@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>기본사회와 지방정부 지식 위키트리 | 정책 포털</title>
   <meta name="description" content="기본사회의 철학, 헌법적 가치, 공유부와 커머닝, AI와 기후위기 대전환, 지방정부의 5대 역할과 국내외 선도 사례를 알기 쉽게 정리한 인터랙티브 지식 위키트리">
   
@@ -33,10 +33,14 @@
       <!-- 뷰 모드 스위처 (문서 뷰 vs 카드보드 뷰) -->
       <div class="view-mode-switcher" id="viewModeSwitcher" role="radiogroup" aria-label="화면 보기 방식">
         <button class="view-mode-btn active" id="viewModeWikiBtn" data-mode="wiki" aria-checked="true" title="단일 문서 상세 보기">
-          📖 <span>문서 뷰</span>
+          <span class="btn-icon">📖</span>
+          <span class="btn-text">문서 뷰</span>
+          <span class="btn-text-short">문서</span>
         </button>
         <button class="view-mode-btn" id="viewModeBoardBtn" data-mode="board" aria-checked="false" title="25개 핵심 주제 카드보드 보기">
-          📋 <span>카드보드 뷰</span>
+          <span class="btn-icon">📋</span>
+          <span class="btn-text">카드보드 뷰</span>
+          <span class="btn-text-short">보드</span>
         </button>
       </div>
 
@@ -51,6 +55,14 @@
 
     <!-- 좌측 사이드바 트리 탐색기 -->
     <aside class="sidebar" id="sidebar">
+      <!-- 모바일 전용 사이드바 상단 바 (타이틀 및 닫기 버튼) -->
+      <div class="sidebar-mobile-header" id="sidebarMobileHeader">
+        <div class="sidebar-mobile-title">
+          <span>📚 정책 목차 네비게이션</span>
+        </div>
+        <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="메뉴 닫기">✕</button>
+      </div>
+
       <!-- 실시간 통합 검색창 -->
       <div class="sidebar-search-box">
         <div class="search-input-wrap">
@@ -109,6 +121,11 @@
       <div class="lightbox-caption-text" id="lightboxCaption"></div>
     </div>
   </div>
+
+  <!-- 화면 최상단 이동 플로팅 버튼 -->
+  <button class="scroll-top-btn" id="scrollTopBtn" aria-label="화면 최상단으로 이동" title="맨 위로 가기">
+    ↑
+  </button>
 
   <!-- 자바스크립트 모듈 로드 -->
   <script src="js/data.js"></script>

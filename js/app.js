@@ -36,7 +36,9 @@ document.addEventListener("DOMContentLoaded", () => {
     themeToggleBtn: document.getElementById("themeToggleBtn"),
     sidebar: document.getElementById("sidebar"),
     sidebarToggleBtn: document.getElementById("sidebarToggleBtn"),
+    sidebarCloseBtn: document.getElementById("sidebarCloseBtn"),
     sidebarBackdrop: document.getElementById("sidebarBackdrop"),
+    scrollTopBtn: document.getElementById("scrollTopBtn"),
     expandAllBtn: document.getElementById("expandAllBtn"),
     collapseAllBtn: document.getElementById("collapseAllBtn"),
     lightboxModal: document.getElementById("lightboxModal"),
@@ -153,6 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 뷰 모드 전환 (문서 뷰 vs 카드보드 뷰)
   function switchViewMode(mode) {
     state.viewMode = mode;
+    closeMobileSidebar();
     if (mode === "board") {
       if (elements.viewModeWikiBtn) {
         elements.viewModeWikiBtn.classList.remove("active");
@@ -706,25 +709,70 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 9. 모바일 사이드바 토글
+  // 9. 모바일 사이드바 토글 및 제어
   function toggleMobileSidebar() {
     if (!elements.sidebar) return;
-    elements.sidebar.classList.toggle("mobile-open");
+    const isOpen = elements.sidebar.classList.toggle("mobile-open");
+    if (elements.sidebarBackdrop) {
+      elements.sidebarBackdrop.classList.toggle("active", isOpen);
+    }
+    if (isOpen) {
+      document.body.classList.add("sidebar-locked");
+    } else {
+      document.body.classList.remove("sidebar-locked");
+    }
   }
 
   function closeMobileSidebar() {
     if (elements.sidebar && elements.sidebar.classList.contains("mobile-open")) {
       elements.sidebar.classList.remove("mobile-open");
     }
+    if (elements.sidebarBackdrop) {
+      elements.sidebarBackdrop.classList.remove("active");
+    }
+    document.body.classList.remove("sidebar-locked");
   }
 
   if (elements.sidebarToggleBtn) {
     elements.sidebarToggleBtn.addEventListener("click", toggleMobileSidebar);
   }
 
+  if (elements.sidebarCloseBtn) {
+    elements.sidebarCloseBtn.addEventListener("click", closeMobileSidebar);
+  }
+
   if (elements.sidebarBackdrop) {
     elements.sidebarBackdrop.addEventListener("click", closeMobileSidebar);
   }
+
+  // 플로팅 맨 위로 가기 버튼 스크롤 감지 및 클릭 이벤트
+  function handleWindowScroll() {
+    if (!elements.scrollTopBtn) return;
+    if (window.scrollY > 280) {
+      elements.scrollTopBtn.classList.add("visible");
+    } else {
+      elements.scrollTopBtn.classList.remove("visible");
+    }
+  }
+
+  window.addEventListener("scroll", handleWindowScroll, { passive: true });
+
+  if (elements.scrollTopBtn) {
+    elements.scrollTopBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
+  // ESC 키로 모바일 사이드바, 검색 오버레이, 라이트박스 닫기
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeMobileSidebar();
+      closeLightbox();
+      if (elements.searchResultsOverlay) {
+        elements.searchResultsOverlay.classList.remove("show");
+      }
+    }
+  });
 
   // 10. 사이드바 전체 펼치기 / 접기
   if (elements.expandAllBtn) {
